@@ -59,8 +59,8 @@ cv2.imshow("Perspective transformation", persp)
 cv2.imshow("Affine transformation", affine)
 
 # ***** ZAPIS OBRAZKOW *****
-cv2.imwrite("wyjsciowe/affiniczne.jpg",affine)
-cv2.imwrite("wyjsciowe/perspektywiczne.jpg",persp)
+#cv2.imwrite("wyjsciowe/affiniczne.jpg",affine)
+#cv2.imwrite("wyjsciowe/perspektywiczne.jpg",persp)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
