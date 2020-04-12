@@ -1,31 +1,39 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.transforms as mtransforms
+import cv2  
+import numpy as np  
 
+prev = cv2.imread('grid.jpg')
+img = cv2.resize(prev,(600,600),interpolation = cv2.INTER_AREA)
+rows,cols,ch = img.shape
 
-def affine(ax, Z, transform):
-    im = ax.imshow(Z, interpolation='none',
-                   origin='lower',
-                   extent=[-2, 4, -3, 2], clip_on=True)
+cv2.circle(img, (30, 30), 5, (0, 0, 255), -1)
+cv2.circle(img, (570, 30), 5, (0, 0, 255), -1)
+cv2.circle(img, (570, 570), 5, (0, 0, 255), -1)
+cv2.circle(img, (30, 570), 5, (0, 0, 255), -1)
 
-    trans_data = transform + ax.transData
-    im.set_transform(trans_data)
+pts1 = np.float32([[0, 0],
+                   [600, 0],
+                   [0, 600],
+                   [600, 600]])
+pts2 = np.float32([[0, 0],
+                   [600, 0],
+                   [275, 400],
+                   [325, 400]])
 
-    # display intended extent of the image
-    x1, x2, y1, y2 = im.get_extent()
-    ax.set_xlim(-5, 5)
-    ax.set_ylim(-4, 4)
+matrix = cv2.getPerspectiveTransform(pts1, pts2)
+persp = cv2.warpPerspective(img, matrix, (600, 600))
 
+aff1 = np.float32([[50,50],
+                   [200,50],
+                   [50,200]])
+aff2 = np.float32([[30,30],
+                   [150,50],
+                   [70,200]])
+M = cv2.getAffineTransform(aff1,aff2)
+affine = cv2.warpAffine(img,M,(cols,rows))
 
-# prepare image and figure
-fig, ((ax1,ax2),
-      (ax3,ax4)) = plt.subplots(2,2)
-Z = plt.imread('grid.jpg')
-affine(ax1,Z,mtransforms.Affine2D())
-affine(ax3,Z,mtransforms.Affine2D())
+cv2.imshow("Image", img)
+cv2.imshow("Perspective transformation", persp)
+cv2.imshow("Affine transformation", affine)
 
-# everything and a translation
-affine(ax2, Z, mtransforms.Affine2D().
-        rotate_deg(-30))
-affine(ax4, Z, mtransforms.Affine2D().skew_deg(30,30).scale(1.5,.5))
-plt.show()
+cv2.waitKey(0)
+cv2.destroyAllWindows()
